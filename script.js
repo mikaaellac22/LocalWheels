@@ -1,6 +1,5 @@
 let page = 1;
 let clicks = 0;
-let inputs = 0;
 let start = Date.now();
 let selectedCar = "";
 let selectedPrice = 0;
@@ -8,10 +7,6 @@ let totalPrice = 0;
 
 document.addEventListener("click", function() {
   clicks = clicks + 1;
-});
-
-document.addEventListener("input", function() {
-  inputs = inputs + 1;
 });
 
 let cars = [
@@ -125,8 +120,8 @@ function showPage5() {
   let year = parseInt(dob.substring(0, 4));
   let age = 2025 - year;
   
-  if (age < 21) {
-    alert("Must be 21 or older!");
+  if (age < 18) {
+    alert("Must be 18 or older!");
     return;
   }
   
@@ -147,10 +142,10 @@ function showPage5() {
   html = html + "<p>Shell - 2.3 km</p>";
   html = html + "<p>Esso - 3.1 km</p>";
   html = html + "<hr>";
-  html = html + "<h2>Metrics</h2>";
-  html = html + "<p>Time: " + time + " seconds</p>";
-  html = html + "<p>Clicks: " + clicks + "</p>";
-  html = html + "<p>Inputs: " + inputs + "</p>";
+  html = html + "<h2>Study Metrics</h2>";
+  html = html + "<p><strong>Total Time:</strong> " + time + " seconds</p>";
+  html = html + "<p><strong>Total Clicks:</strong> " + clicks + "</p>";
+  html = html + "<hr>";
   html = html + "<button onclick='location.reload()'>New Booking</button>";
   
   document.getElementById("app").innerHTML = html;
