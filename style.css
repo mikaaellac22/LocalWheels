@@ -48,3 +48,42 @@ button {
   color: blue;
   font-weight: bold;
 }
+
+.top-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.top-controls select {
+  flex: 1;
+  margin: 0;
+}
+
+.emergency {
+  background: red;
+}
+
+.step-text {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: #d6cfcf;
+  margin-bottom: 20px;
+}
+
+.progress-fill {
+  height: 12px;
+  background: blue;
+}
+
+.small-btn {
+  width: auto;
+  margin: 0;
+  padding: 10px;
+  font-size: 14px;
+}
