@@ -22,9 +22,33 @@ let extras = [
   { name: "Cleaning", price: 15 }
 ];
 
+function topControls(step, stepName) {
+  let progress = step * 20;
+
+  let html = "";
+
+  html = html + "<div class='top-controls'>";
+  html = html + "<select>";
+  html = html + "<option>English</option>";
+  html = html + "<option>Dutch</option>";
+  html = html + "<option>Greek</option>";
+  html = html + "</select>";
+
+  html = html + "<button class='small-btn emergency' onclick='alert(\"Emergency options:\\nCall Host\\nRoadside Assistance\\nLocal Emergency: 112\")'>Emergency</button>";
+  html = html + "</div>";
+
+  html = html + "<p class='step-text'>Step " + step + " of 5: " + stepName + "</p>";
+  html = html + "<div class='progress-bar'>";
+  html = html + "<div class='progress-fill' style='width:" + progress + "%'></div>";
+  html = html + "</div>";
+
+  return html;
+}
+
 function showPage1() {
   page = 1;
-  let html = "<h1>Book Your Car</h1>";
+  let html = topControls(1, "Search Details");
+  html = html + "<h1>Book Your Car</h1>";
   html = html + "<label>Pickup Location</label>";
   html = html + "<input type='text' id='pickup' placeholder='City'>";
   html = html + "<label>Pickup Date</label>";
@@ -39,7 +63,8 @@ function showPage1() {
 
 function showPage2() {
   page = 2;
-  let html = "<h1>Select a Car</h1>";
+  let html = topControls(2, "Select a Car");
+  html = html + "<h1>Select a Car</h1>";
   
   for (let i = 0; i < cars.length; i = i + 1) {
     let c = cars[i];
@@ -64,7 +89,8 @@ function selectCar(name, price) {
 
 function showPage3() {
   page = 3;
-  let html = "<h1>Add Extras</h1>";
+  let html = topControls(3, "Add Extras");
+  html = html + "<h1>Add Extras</h1>";
   html = html + "<p>Car: " + selectedCar + "</p>";
   html = html + "<p>Price: $" + totalPrice + "/day</p>";
   
@@ -92,7 +118,8 @@ function updatePrice() {
 
 function showPage4() {
   page = 4;
-  let html = "<h1>Verify</h1>";
+  let html = topControls(4, "Verification");
+  html = html + "<h1>Verify</h1>";
   html = html + "<label>Full Name</label>";
   html = html + "<input type='text' id='name'>";
   html = html + "<label>Date of Birth</label>";
@@ -128,7 +155,8 @@ function showPage5() {
   page = 5;
   let time = ((Date.now() - start) / 1000).toFixed(2);
   
-  let html = "<h1>Booking Confirmed!</h1>";
+  let html = topControls(5, "Confirmation");
+  html = html + "<h1>Booking Confirmed!</h1>";
   html = html + "<p>Car: " + selectedCar + "</p>";
   html = html + "<p>Daily Cost: $" + totalPrice + "</p>";
   html = html + "<hr>";
@@ -137,6 +165,7 @@ function showPage5() {
   html = html + "<p>Rating: 5 stars</p>";
   html = html + "<p>Phone: +39 555-1234</p>";
   html = html + "<p>Meeting: Parking Bay 5</p>";
+  html = html + "<button onclick='alert(\"Host: Marco Rossi\\nMessage: Your booking is confirmed. I will meet you at Parking Bay 5 on the reservation start date.\")'>Open Host Chat</button>";
   html = html + "<hr>";
   html = html + "<h2>Fuel Stations Near Return</h2>";
   html = html + "<p>Shell - 2.3 km</p>";
