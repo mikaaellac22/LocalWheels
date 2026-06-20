@@ -6,6 +6,18 @@ let selectedPrice = 0;
 let totalPrice = 0;
 let rentalDays = 0;
 
+let pickupLocation = "";
+let returnLocation = "";
+let pickupDateValue = "";
+let returnDateValue = "";
+
+let selectedExtras = [false, false, false];
+
+let fullName = "";
+let dateOfBirth = "";
+let licenseNumber = "";
+let licensePhoto = null;
+
 document.addEventListener("click", function() {
   clicks = clicks + 1;
 });
@@ -58,30 +70,41 @@ function showPage1() {
   html = html + "<input type='text' id='return' placeholder='City'>";
   html = html + "<label>Return Date</label>";
   html = html + "<input type='date' id='retDate'>";
+  html = html + "<p id='dateError' class='form-error' role='alert'></p>";
   html = html + "<button onclick='searchCars()'>Search</button>";
   document.getElementById("app").innerHTML = html;
+  document.getElementById("pickup").value = pickupLocation;
+  document.getElementById("return").value = returnLocation;
+  document.getElementById("pickDate").value = pickupDateValue;
+  document.getElementById("retDate").value = returnDateValue;
 }
 
 function searchCars() {
-  let pickupDateValue = document.getElementById("pickDate").value;
-  let returnDateValue = document.getElementById("retDate").value;
+  let errorMessage = document.getElementById("dateError");
+
+  pickupLocation = document.getElementById("pickup").value.trim();
+  returnLocation = document.getElementById("return").value.trim();
+  pickupDateValue = document.getElementById("pickDate").value;
+  returnDateValue = document.getElementById("retDate").value;
+
+  errorMessage.textContent = "";
 
   if (pickupDateValue === "" || returnDateValue === "") {
-    alert("Please select both pickup and return dates.");
+    errorMessage.textContent = "Please select both a pickup date and a return date.";
     return;
   }
 
   let pickupDate = new Date(pickupDateValue + "T00:00:00");
   let returnDate = new Date(returnDateValue + "T00:00:00");
 
+  if (returnDate <= pickupDate) {
+    errorMessage.textContent = "The return date must be after the pickup date.";
+    return;
+  }
+
   let difference = returnDate - pickupDate;
 
   rentalDays = Math.round(difference / (1000 * 60 * 60 * 24));
-
-  if (rentalDays <= 0) {
-    alert("Return date must be after pickup date.");
-    return;
-  }
 
   showPage2();
 }
@@ -123,7 +146,11 @@ function showPage3() {
   
   for (let i = 0; i < extras.length; i = i + 1) {
     let e = extras[i];
-    html = html + "<input type='checkbox' id='extra" + i + "' onchange='updatePrice()'>";
+    let checked = "";
+    if (selectedExtras[i] === true) {
+      checked = " checked";
+    }
+    html = html + "<input type='checkbox' id='extra" + i + "' onchange='updatePrice()'" + checked + ">";
     html = html + "<label for='extra" + i + "'>" + e.name + " +$" + e.price + "</label><br>";
   }
   
@@ -136,9 +163,10 @@ function updatePrice() {
   totalPrice = selectedPrice * rentalDays;
   
   for (let i = 0; i < extras.length; i = i + 1) {
-    let checked = document.getElementById("extra" + i).checked;
-    if (checked === true) {
-      totalPrice = totalPrice + extras[i].price;
+    let checkbox = document.getElementById("extra" + i);
+    selectedExtras[i] = checkbox.checked;
+    if (selectedExtras[i] === true) {
+      totalPrice = totalPrice + (extras[i].price * rentalDays);
     }
   }
 }
@@ -154,28 +182,62 @@ function showPage4() {
   html = html + "<label>License Number</label>";
   html = html + "<input type='text' id='license'>";
   html = html + "<label>Upload License Photo</label>";
-  html = html + "<input type='file' id='photo'>";
+  html = html + "<input type='file' id='photo' onchange='saveLicensePhoto()'>";
+  html = html + "<p id='photoStatus'></p>";
+  html = html + "<p id='verificationError' class='form-error'></p>";
   html = html + "<button onclick='showPage5()'>Confirm</button>";
   html = html + "<button onclick='showPage3()'>Back</button>";
   document.getElementById("app").innerHTML = html;
+
+  document.getElementById("name").value = fullName;
+  document.getElementById("dob").value = dateOfBirth;
+  document.getElementById("license").value = licenseNumber;
+
+  if (licensePhoto !== null) {
+    document.getElementById("photoStatus").textContent =
+      "Selected file: " + licensePhoto.name;
+  }
+}
+
+function saveVerificationDetails() {
+  fullName = document.getElementById("name").value.trim();
+  dateOfBirth = document.getElementById("dob").value;
+  licenseNumber = document.getElementById("license").value.trim();
+
+  let photoInput = document.getElementById("photo");
+
+  if (photoInput.files.length > 0) {
+    licensePhoto = photoInput.files[0];
+  }
+}
+
+function saveLicensePhoto() {
+  let photoInput = document.getElementById("photo");
+
+  if (photoInput.files.length > 0) {
+    licensePhoto = photoInput.files[0];
+
+    document.getElementById("photoStatus").textContent = "Selected file: " + licensePhoto.name;
+  }
 }
 
 function showPage5() {
-  let name = document.getElementById("name").value;
-  let dob = document.getElementById("dob").value;
-  let license = document.getElementById("license").value;
-  let photo = document.getElementById("photo").value;
-  
-  if (name === "" || dob === "" || license === "" || photo === "") {
-    alert("Fill all fields!");
+  saveVerificationDetails();
+
+  let errorMessage = document.getElementById("verificationError");
+
+  errorMessage.textContent = "";
+
+  if (fullName === "" ||dateOfBirth === "" ||licenseNumber === "" ||licensePhoto === null) {
+    errorMessage.textContent = "Please complete all verification fields.";
     return;
   }
-  
-  let year = parseInt(dob.substring(0, 4));
-  let age = 2025 - year;
-  
+
+  let year = parseInt(dateOfBirth.substring(0, 4));
+  let age = new Date().getFullYear() - year;
+
   if (age < 18) {
-    alert("Must be 18 or older!");
+    errorMessage.textContent = "You must be at least 18 years old to make a booking!";
     return;
   }
   
