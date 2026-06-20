@@ -4,6 +4,7 @@ let start = Date.now();
 let selectedCar = "";
 let selectedPrice = 0;
 let totalPrice = 0;
+let rentalDays = 0;
 
 document.addEventListener("click", function() {
   clicks = clicks + 1;
@@ -57,8 +58,32 @@ function showPage1() {
   html = html + "<input type='text' id='return' placeholder='City'>";
   html = html + "<label>Return Date</label>";
   html = html + "<input type='date' id='retDate'>";
-  html = html + "<button onclick='showPage2()'>Search</button>";
+  html = html + "<button onclick='searchCars()'>Search</button>";
   document.getElementById("app").innerHTML = html;
+}
+
+function searchCars() {
+  let pickupDateValue = document.getElementById("pickDate").value;
+  let returnDateValue = document.getElementById("retDate").value;
+
+  if (pickupDateValue === "" || returnDateValue === "") {
+    alert("Please select both pickup and return dates.");
+    return;
+  }
+
+  let pickupDate = new Date(pickupDateValue + "T00:00:00");
+  let returnDate = new Date(returnDateValue + "T00:00:00");
+
+  let difference = returnDate - pickupDate;
+
+  rentalDays = Math.round(difference / (1000 * 60 * 60 * 24));
+
+  if (rentalDays <= 0) {
+    alert("Return date must be after pickup date.");
+    return;
+  }
+
+  showPage2();
 }
 
 function showPage2() {
@@ -83,7 +108,7 @@ function showPage2() {
 function selectCar(name, price) {
   selectedCar = name;
   selectedPrice = price;
-  totalPrice = price;
+  totalPrice = price * rentalDays;
   showPage3();
 }
 
@@ -92,7 +117,9 @@ function showPage3() {
   let html = topControls(3, "Add Extras");
   html = html + "<h1>Add Extras</h1>";
   html = html + "<p>Car: " + selectedCar + "</p>";
-  html = html + "<p>Price: $" + totalPrice + "/day</p>";
+  html += "<p>Rental period: " + rentalDays + " days</p>";
+  html += "<p>Car price: $" + selectedPrice + " /day</p>";
+  html += "<p>Total before extras: $" + totalPrice + "</p>";
   
   for (let i = 0; i < extras.length; i = i + 1) {
     let e = extras[i];
@@ -106,7 +133,7 @@ function showPage3() {
 }
 
 function updatePrice() {
-  totalPrice = selectedPrice;
+  totalPrice = selectedPrice * rentalDays;
   
   for (let i = 0; i < extras.length; i = i + 1) {
     let checked = document.getElementById("extra" + i).checked;
@@ -158,7 +185,8 @@ function showPage5() {
   let html = topControls(5, "Confirmation");
   html = html + "<h1>Booking Confirmed!</h1>";
   html = html + "<p>Car: " + selectedCar + "</p>";
-  html = html + "<p>Daily Cost: $" + totalPrice + "</p>";
+  html += "<p>Rental period: " + rentalDays + " days</p>";
+  html += "<p>Total cost: $" + totalPrice + "</p>";
   html = html + "<hr>";
   html = html + "<h2>Host Information</h2>";
   html = html + "<p>Name: Marco Rossi</p>";
